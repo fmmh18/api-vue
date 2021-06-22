@@ -15,7 +15,7 @@
                             </tr>
                         </thead>
                             <tbody>
-                                <tr v-for="user in users" :key="user.id">
+                                <tr v-for="user in users" v-bind:key="user.id">
                                     <td>{{user.id}}</td>
                                     <td>{{user.name}}</td>
                                     <td>{{user.email}}</td>
@@ -23,7 +23,7 @@
                                         <a :href="'#/usuario-editar/'+ user.id " class="btn btn-info"><i class="fas fa-edit"></i></a>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" @click="deleteUser(user.id)" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
+                                        <a href="#"  v-on:click="deleteUser(user.id)" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -39,7 +39,7 @@
 import axios from 'axios'
 
 const JWTToken = JSON.parse(localStorage.getItem('user'));
-const BASE_URL = 'http://localhost:8001/api/' 
+const BASE_URL = 'http://localhost:8000/api/' 
 
 export default {
     name: "Usuário",
@@ -52,28 +52,28 @@ export default {
         loggedIn() {
         return this.$store.state.auth.status.loggedIn;
         },
-    }, 
-    mounted () { 
+    },
         
+        mounted () { 
+            this.listUser()
+            
+        }, 
+    methods: {
+        listUser(){ 
             axios
             .get(BASE_URL + 'usuario',{ headers: {"Authorization" : `Bearer ${JWTToken.access_token}`} })
             .then(response => {
+                console.log(response)
                 this.users = response.data
             }) 
-    },
-    methods: {
+        },
         deleteUser(id)
         {
-             return axios
+            axios
             .delete(BASE_URL + 'usuario/'+id,{ headers: {"Authorization" : `Bearer ${JWTToken.access_token}`} })
-            .then(response => { 
-                if(response.data.id != ""){
-                    alert('usuário deletado.')
-                }else{
-                    alert('erro ao deletar.')
-                }
-
-            }) 
+            .then( 
+                this.listUser()
+            ) 
         }
     }
 }

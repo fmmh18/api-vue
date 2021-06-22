@@ -27,7 +27,7 @@
 </template>
 <script>
     import axios from 'axios'
-    const BASE_URL = 'http://localhost:8001/api/'
+    const BASE_URL = 'http://localhost:8000/api/'
     const JWTToken = JSON.parse(localStorage.getItem('user'));
 
 export default {
@@ -56,7 +56,7 @@ export default {
                 this.id = response.data.id
                 this.name = response.data.name
                 this.email = response.data.email
-                this.password = response.data.password
+                this.password = response.data.password 
                  
             })
     },

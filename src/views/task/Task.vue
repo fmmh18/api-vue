@@ -16,7 +16,7 @@
                             </tr>
                         </thead>
                             <tbody>
-                                <tr v-for="task in tasks" :key="task.id">
+                                <tr v-for="task in tasks" v-bind:key="task.id">
                                     <td>{{task.id}}</td>
                                     <td>{{task.name}}</td>
                                     <td>{{task.date_conclusion}}</td>
@@ -25,7 +25,7 @@
                                         <a :href="'#/tarefa-editar/'+ task.id " class="btn btn-info"><i class="fas fa-edit"></i></a>
                                     </td>
                                     <td class="text-center">
-                                        <a href="#" @click="deleteTask(task.id)" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
+                                        <a href="#" v-on:click="deleteTask(task.id)" class="btn btn-danger"><i class="far fa-trash-alt"></i></a>
                                     </td>
                                 </tr>
                             </tbody>
@@ -42,7 +42,7 @@
 import axios from 'axios'
 
 const JWTToken = JSON.parse(localStorage.getItem('user'));
-const BASE_URL = 'http://localhost:8001/api/' 
+const BASE_URL = 'http://localhost:8000/api/' 
 
 export default {
     name: "Usuário",
@@ -57,26 +57,25 @@ export default {
         },
     }, 
     mounted () { 
-        
+        this.listTask()
+          
+    },
+    methods: {
+        listTask()
+        {
             axios
             .get(BASE_URL + 'tarefa',{ headers: {"Authorization" : `Bearer ${JWTToken.access_token}`} })
             .then(response => {
                 this.tasks = response.data
             }) 
-    },
-    methods: {
+        },
         deleteTask(id)
         {
              return axios
             .delete(BASE_URL + 'tarefa/'+id,{ headers: {"Authorization" : `Bearer ${JWTToken.access_token}`} })
-            .then(response => { 
-                if(response.data.id != ""){
-                    alert('usuário deletado.')
-                }else{
-                    alert('erro ao deletar.')
-                }
-
-            }) 
+            .then(
+                this.listTask() 
+            ) 
         }
     }
 }
